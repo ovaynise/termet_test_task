@@ -11,29 +11,40 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import find_dotenv, load_dotenv
 import os
 from datetime import datetime
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+SERVER_IP = os.getenv("SERVER_IP")
+SERVER_DOMEN = os.getenv("SERVER_DOMEN")
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-vq+zfb0n89#xtj13cg1#q*41t^tw4m0qpwaxbr1@0ipp(6h%e@"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "termet",
+    SERVER_DOMEN,
+    SERVER_IP,
+]
 
 
 STATICFILES_DIRS = [
     BASE_DIR / "static_dev",
 ]
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / 'collected_static'
 
 
 INSTALLED_APPS = [
@@ -132,3 +143,12 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://127.0.0.1",
+    f"http://{SERVER_DOMEN}",
+    f"http://{SERVER_IP}",
+]
+CSRF_TRUSTED_ORIGINS = [f'https://*.{SERVER_DOMEN}', 'https://*.127.0.0.1']
+CORS_URLS_REGEX = r"^/api/.*$"

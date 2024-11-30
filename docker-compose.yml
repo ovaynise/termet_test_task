@@ -1,0 +1,27 @@
+version: '3.8'
+
+volumes:
+  pg_data:
+  static:
+  media:
+
+services:
+  termet:
+    build: ./termet_app/
+    env_file: .env
+    environment:
+      - TZ=Europe/Minsk
+    volumes:
+      - static:/backend_static
+      - media:${MEDIA_ROOT_LOCAL}
+  gateway:
+    build: ./gateway/
+    volumes:
+      - static:/staticfiles/
+      - media:${MEDIA_ROOT_LOCAL}
+    ports:
+      - 8000:80
+    env_file: .env
+    environment:
+      - POSTGRES_HOST=${POSTGRES_HOST_DOCKER}
+      - TZ=Europe/Minsk
