@@ -30,12 +30,12 @@
     {% endif %}
 
     {% else %}
-    <h3>Задать объём (кол-во сообщений) для контейнеров</h3>
+    <h3>Задать объём для контейнеров</h3>
     <form method='POST' action='' id='capacityForm' onsubmit='return validateCapacity();' novalidate>
         {% csrf_token %}
         <div class='mb-3'>
             <label for='capacity'>Объём (кол-во) сообщений:</label>
-            <input type='text' id='capacity' name='capacity' class='form-control' required>
+            <input type='number' id='capacity' name='capacity' class='form-control' required min='1' max='1000000'>
         </div>
         <button type='submit' class='btn btn-primary'>Начать заполнение</button>
     </form>
@@ -58,14 +58,20 @@
 </div>
 
 <script>
+    document.getElementById('capacity').addEventListener('input', function (e) {
+        const max = 1000000;
+        if (parseInt(this.value) > max) {
+            alert('Ошибка ввода: максимальный объём контейнера - 1,000,000.');
+            this.value = max;
+        }
+    });
+
     function validateCapacity() {
         const capacityInput = document.getElementById('capacity').value;
-
-        if (!capacityInput || isNaN(capacityInput) || capacityInput <= 0 || !Number.isInteger(parseFloat(capacityInput))) {
-            alert('Ошибка ввода: введите корректное целое число больше 0.');
+        if (!capacityInput || isNaN(capacityInput) || capacityInput <= 0 || capacityInput > 1000000 || !Number.isInteger(parseFloat(capacityInput))) {
+            alert('Ошибка ввода: введите корректное целое число от 1 до 1,000,000.');
             return false;
         }
-
         return true;
     }
 </script>
