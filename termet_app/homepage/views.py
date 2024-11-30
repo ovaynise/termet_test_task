@@ -3,8 +3,10 @@ from django.db import connection
 from django.db.models import Count, F
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Container, Message
+from config import (MAX_CONTAINER_CAPACITY, MIN_CONTAINER_CAPACITY,
+                    MAX_MESSAGE_LEN, OUTPUT_DATA_PAGINATION)
 
-MAX_CAPACITY = 1000000
+
 
 def reset_container_id():
     with connection.cursor() as cursor:
@@ -20,10 +22,12 @@ def index(request):
             return redirect('homepage:index')
 
         capacity = request.POST.get('capacity', '').strip()
-        if not capacity.isdigit() or int(capacity) > MAX_CAPACITY:
+        if not capacity.isdigit() or int(capacity) > MAX_CONTAINER_CAPACITY:
             return render(request, 'homepage/index.html', {
                 'containers_exist': False,
-                'error': f'Введите корректное целое число от 1 до {MAX_CAPACITY}.',
+                'error': f'Введите корректное целое '
+                         f'число от {MIN_CONTAINER_CAPACITY} до'
+                         f' {MAX_CONTAINER_CAPACITY}.',
             })
 
         capacity = int(capacity)
@@ -53,7 +57,7 @@ def add_message(request, container_id):
 
     if request.method == 'POST':
         text = request.POST.get('text', '').strip()
-        if not text or len(text) > 10 or not all(
+        if not text or len(text) > MAX_MESSAGE_LEN or not all(
                 char.isalnum() or char in "!@#$%^&*()-_=+[]{};:,.<>?/|\\~`" for char in text):
             return render(request, 'homepage/add_message.html', {
                 'container': container,
@@ -61,7 +65,8 @@ def add_message(request, container_id):
                 'total_messages': total_messages,
                 'container_capacity': container_capacity,
                 'error': 'Ошибка ввода: Сообщение должно быть не более '
-                         '10 символов, содержать только буквы, цифры или'
+                         f'{MAX_MESSAGE_LEN} символов, содержать только буквы,'
+                         f' цифры или'
                          ' разрешённые символы.',
             })
 
@@ -112,7 +117,7 @@ def global_search_message(request):
 
 def output_all_data(request):
     messages = Message.objects.select_related('container').all()
-    paginator = Paginator(messages, 10)
+    paginator = Paginator(messages, OUTPUT_DATA_PAGINATION)
     page = request.GET.get('page')
     try:
         paginated_messages = paginator.page(page)

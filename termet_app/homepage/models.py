@@ -1,31 +1,41 @@
 from django.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
+from django.core.validators import (MaxValueValidator, MinValueValidator,
+                                    RegexValidator)
 from django.core.exceptions import ValidationError
+from config import (MIN_CONTAINER_CAPACITY, MAX_CONTAINER_CAPACITY,
+                    MAX_MESSAGE_LEN, MIN_MESSAGE_LEN)
 
 class Container(models.Model):
     capacity = models.PositiveIntegerField(
         validators=[
-            MinValueValidator(1, message='Capacity должно быть больше или равно 1'),
-            MaxValueValidator(1000000, message='Capacity не должно превышать 1000000')
+            MinValueValidator(
+                MIN_CONTAINER_CAPACITY,
+                message=f'Значение должно быть больше '
+                        f'или равно {MIN_CONTAINER_CAPACITY}'),
+            MaxValueValidator(
+                MAX_CONTAINER_CAPACITY,
+                message=f'Значение не должно'
+                        f' превышать {MAX_CONTAINER_CAPACITY}')
         ]
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def clean(self):
         if not isinstance(self.capacity, int):
-            raise ValidationError('Capacity должно быть целым числом.')
+            raise ValidationError('Значение должно быть целым числом.')
 
     def __str__(self):
         return f"Container {self.id} (Capacity: {self.capacity})"
 
 class Message(models.Model):
     text = models.CharField(
-        max_length=10,
+        max_length=MAX_MESSAGE_LEN,
         unique=True,
         validators=[
             RegexValidator(
                 regex=r'^[a-zA-Z0-9!@#$%^&*()\-_+=\[\]{};:,.<>?/|\\~`]+$',
-                message='Text может содержать только буквы, цифры или разрешённые символы.'
+                message='Text может содержать только буквы, цифры или'
+                        ' разрешённые символы.'
             ),
         ]
     )
@@ -37,8 +47,10 @@ class Message(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def clean(self):
-        if not (1 <= len(self.text) <= 10):
-            raise ValidationError('Text должно быть от 1 до 10 символов.')
+        if not (MIN_MESSAGE_LEN <= len(self.text) <= MAX_MESSAGE_LEN):
+            raise ValidationError(
+                f'Text должно быть от {MIN_MESSAGE_LEN} до {MAX_MESSAGE_LEN} '
+                f'символов.')
         if not self.text:
             raise ValidationError('Text не может быть пустым.')
 
