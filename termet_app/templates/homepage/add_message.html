@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class='container'>
+
+    <div class='mb-4'>
+        <h4>Статистика</h4>
+        <ul>
+            <li><strong>Всего контейнеров:</strong> {{ total_containers }}</li>
+            <li><strong>Всего сообщений:</strong> {{ total_messages }}</li>
+            <li><strong>Заданный объём контейнера:</strong> {{ container_capacity }} сообщений</li>
+        </ul>
+    </div>
+
+    <h3>Контейнер №{{ container.id }}</h3>
+    <p>Заполнено: {{ container.messages.count }}/{{ container.capacity }}</p>
+
+    <h4>Добавить сообщение</h4>
+    {% if error %}
+        <p class='text-danger'>{{ error }}</p>
+    {% endif %}
+    <form method='POST' action='' id='messageForm' onsubmit='return validateMessage();'>
+        {% csrf_token %}
+        <div class='mb-3'>
+            <label for='text'>Сообщение (до 10 символов):</label>
+            <input type='text' id='text' name='text' maxlength='10' class='form-control' required>
+        </div>
+        <button type='submit' class='btn btn-primary'>Добавить</button>
+    </form>
+
+    <h4 class='mt-4'>Список сообщений</h4>
+    <ul>
+        {% for message in container.messages.all %}
+        <li>{{ message.text }}</li>
+        {% endfor %}
+    </ul>
+
+</div>
+
+<script>
+    function validateMessage() {
+        const textInput = document.getElementById('text').value.trim();
+
+        if (textInput.length === 0 || textInput.length > 10) {
+            alert('Ошибка ввода: Сообщение должно быть не более 10 символов.');
+            return false;
+        }
+        const allowedCharacters = /^[a-zA-Z0-9!@#$%^&*()\-=+[\]{};:,.<>?/|\\~`]+$/;
+        if (!allowedCharacters.test(textInput)) {
+            alert('Ошибка ввода: Сообщение может содержать только буквы на английском языке, цифры или разрешённые символы.');
+            return false;
+        }
+
+        return true;
+    }
+</script>
+{% endblock %}

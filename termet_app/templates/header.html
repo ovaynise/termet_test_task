@@ -1,0 +1,41 @@
+{% load static %}
+<header>
+    <nav class='navbar navbar-light' style='background-color: lightgrey;'>
+        <div class='container d-flex align-items-center'>
+            <a class='navbar-brand mb-3' href='{% url "homepage:index" %}'>
+                TERMET SERVICE
+            </a>
+            {% with request.resolver_match.view_name as view_name %}
+            <ul class='nav nav-pills gap-3'>
+                <li class='nav-item'>
+                    <a class='nav-link {% if view_name == "homepage:index" %} text-white active{% endif %}'
+                       href='{% url "homepage:index" %}'>
+                        Главная
+                    </a>
+                </li>
+                {% if container %}
+                <li class='nav-item'>
+                    <a class='nav-link {% if view_name == "homepage:add_message" %} text-white active{% endif %}'
+                       href='{% url "homepage:add_message" container.id %}'>
+                        Контейнер №{{ container.id }}
+                    </a>
+                </li>
+                {% endif %}
+                <li class='nav-item'>
+                    <a class='nav-link {% if view_name == "homepage:global_search_message" %} text-white active{% endif %}'
+                       href='{% url "homepage:global_search_message" %}'>
+                        Поиск сообщений
+                    </a>
+                </li>
+                <li class='nav-item'>
+                    <a class='nav-link {% if view_name == "homepage:output_all_data" %} text-white active{% endif %}'
+                       href='{% url "homepage:output_all_data" %}'>
+                        Вывод всех данных
+                    </a>
+                </li>
+            </ul>
+            <a class='nav-link ms-auto' href='/admin/'>Админ-зона</a>
+            {% endwith %}
+        </div>
+    </nav>
+</header>

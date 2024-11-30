@@ -1,37 +1,17 @@
 from django.db import models
 
-class BaseModel(models.Model):
-    """
-    Абстрактная модель.
-    Добавляет к модели дату создания и последнего изменения.
-    """
+class Container(models.Model):
+    capacity = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
-    modified_at = models.DateTimeField(auto_now_add=False, auto_now=True)
-    class Meta:
-        abstract = True
-
-from django.db import models
-
-
-class Container(BaseModel):
-    volume = models.IntegerField('Объем контейнера', help_text='Количество сообщений в контейнере')
 
     def __str__(self):
-        return f"Контейнер {self.id}"
+        return f"Container {self.id} (Capacity: {self.capacity})"
 
-
-class Message(BaseModel):
-    text = models.CharField(
-        'Сообщение',
-        max_length=10,
-        unique=True,
-        help_text='Сообщение до 10 символов'
-    )
-    container = models.ForeignKey(
-        Container,
-        on_delete=models.CASCADE,
-        related_name='messages'
-    )
+class Message(models.Model):
+    text = models.CharField(max_length=10, unique=True)
+    container = models.ForeignKey(Container,
+                                  on_delete=models.CASCADE, related_name='messages')
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.text
+        return f"Message: {self.text}"

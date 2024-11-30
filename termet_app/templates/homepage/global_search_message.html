@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class='container'>
+    <h1>Поиск сообщений</h1>
+    <form method='GET' action=''>
+        <div class='mb-3'>
+            <label for='text' class='form-label'>Введите текст сообщения:</label>
+            <input type='text' id='text' name='text' value='{{ query }}' class='form-control' required>
+        </div>
+        <button type='submit' class='btn btn-primary'>Искать</button>
+    </form>
+
+    {% if results %}
+    <h3 class='mt-4'>Результаты поиска</h3>
+    <ul>
+        {% for message in results %}
+        <li>Сообщение: '{{ message.text }}' находится в контейнере №{{ message.container.id }}</li>
+        {% endfor %}
+    </ul>
+    {% elif query %}
+    <p class='mt-4 text-danger'>Сообщения не найдены.</p>
+    {% endif %}
+</div>
+{% endblock %}
