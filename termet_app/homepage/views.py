@@ -3,7 +3,7 @@ from django.db import connection
 from django.db.models import Count, F
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Container, Message
-from config import (MAX_CONTAINER_CAPACITY, MIN_CONTAINER_CAPACITY,
+from homepage.config import (MAX_CONTAINER_CAPACITY, MIN_CONTAINER_CAPACITY,
                     MAX_MESSAGE_LEN, OUTPUT_DATA_PAGINATION)
 
 
