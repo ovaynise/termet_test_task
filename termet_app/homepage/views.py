@@ -4,10 +4,13 @@ from django.db.models import Count, F
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Container, Message
 
+MAX_CAPACITY = 1000000
+
 def reset_container_id():
     with connection.cursor() as cursor:
         cursor.execute("DELETE FROM sqlite_sequence "
                        "WHERE name='homepage_container'")
+
 
 def index(request):
     if request.method == 'POST':
@@ -17,17 +20,16 @@ def index(request):
             return redirect('homepage:index')
 
         capacity = request.POST.get('capacity', '').strip()
-        if not capacity.isdigit():
+        if not capacity.isdigit() or int(capacity) > MAX_CAPACITY:
             return render(request, 'homepage/index.html', {
                 'containers_exist': False,
-                'error': 'Введите корректное целое число для объёма.',
+                'error': f'Введите корректное целое число от 1 до {MAX_CAPACITY}.',
             })
 
         capacity = int(capacity)
         if capacity > 0:
             container = Container.objects.create(capacity=capacity)
-            return redirect('homepage:add_message',
-                            container_id=container.id)
+            return redirect('homepage:add_message', container_id=container.id)
 
     all_containers = Container.objects.all()
     containers_exist = all_containers.exists()
@@ -37,8 +39,7 @@ def index(request):
         'containers': all_containers,
         'total_containers': all_containers.count(),
         'total_messages': Message.objects.count(),
-        'container_capacity':
-            all_containers.first().capacity if containers_exist else None,
+        'container_capacity': all_containers.first().capacity if containers_exist else None,
         'next_container': Container.objects.annotate(
             filled_count=Count('messages')
         ).filter(filled_count__lt=F('capacity')).first(),

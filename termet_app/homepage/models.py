@@ -1,7 +1,8 @@
 from django.db import models
+from django.core.validators import MaxValueValidator
 
 class Container(models.Model):
-    capacity = models.PositiveIntegerField()
+    capacity = models.PositiveIntegerField(validators=[MaxValueValidator(1000000)])
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

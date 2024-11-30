@@ -23,18 +23,18 @@
 
     {% if next_container %}
     <div class='mt-3'>
-        <a href='{% url 'homepage:add_message' next_container.id %}' class='btn btn-success'>
+        <a href='{% url "homepage:add_message" next_container.id %}' class='btn btn-success'>
             Продолжить заполнение контейнера №{{ next_container.id }}
         </a>
     </div>
     {% endif %}
 
     {% else %}
-    <h3>Задать объём контейнера</h3>
+    <h3>Задать объём (кол-во сообщений) для контейнеров</h3>
     <form method='POST' action='' id='capacityForm' onsubmit='return validateCapacity();' novalidate>
         {% csrf_token %}
         <div class='mb-3'>
-            <label for='capacity'>Объём сообщений:</label>
+            <label for='capacity'>Объём (кол-во) сообщений:</label>
             <input type='text' id='capacity' name='capacity' class='form-control' required>
         </div>
         <button type='submit' class='btn btn-primary'>Начать заполнение</button>
@@ -46,7 +46,7 @@
     <ul>
         {% for container in containers %}
         <li>
-            <a href='{% url 'homepage:add_message' container.id %}'>
+            <a href='{% url "homepage:add_message" container.id %}'>
                 Контейнер №{{ container.id }} (Заполнено: {{ container.messages.count }}/{{ container.capacity }})
             </a>
         </li>
