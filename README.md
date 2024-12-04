@@ -1,5 +1,5 @@
 
-# termet_test_task
+# term_test_task
 (Тестовое задание)
 
 ## Для запуска проекта:
